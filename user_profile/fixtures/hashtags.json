@@ -1,0 +1,11 @@
+ [{"model": "user_profile.InterestHashtag", "pk": 1, "fields": {"name": "books"}},
+   {"model": "user_profile.InterestHashtag", "pk": 2, "fields": {"name": "singing"}},
+   {"model": "user_profile.InterestHashtag", "pk": 3, "fields": {"name": "computer_games"}},
+   {"model": "user_profile.InterestHashtag", "pk": 4, "fields": {"name": "hiking"}},
+   {"model": "user_profile.InterestHashtag", "pk": 5, "fields": {"name": "game_of_thrones"}},
+   {"model": "user_profile.InterestHashtag", "pk": 6, "fields": {"name": "catching_flies"}},
+   {"model": "user_profile.InterestHashtag", "pk": 7, "fields": {"name": "fashion"}},
+   {"model": "user_profile.InterestHashtag", "pk": 8, "fields": {"name": "vietnamese_cuisine"}},
+    {"model": "user_profile.InterestHashtag", "pk": 9, "fields": {"name": "searching_job"}}
+    ]
+

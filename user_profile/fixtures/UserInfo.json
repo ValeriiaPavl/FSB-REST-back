@@ -1,0 +1,89 @@
+[
+  {
+    "model": "user_profile.userInfo",
+    "pk": 1,
+    "fields": {
+      "login": 1,
+      "city_of_residence_latitude": 52.090833,
+      "city_of_residence_longitude": 5.121667,
+      "year_of_birth": 1985,
+      "interest_hashtags": [
+        3,
+        2
+      ],
+      "gender": "female",
+      "user_avatar": "",
+      "user_description": "I am a woman and the weather is bad today, so I am planning to code all day"
+    }
+  },
+  {
+    "model": "user_profile.userInfo",
+    "pk": 2,
+    "fields": {
+      "login": 2,
+      "city_of_residence_latitude": 52.372778,
+      "city_of_residence_longitude": 4.893611,
+      "year_of_birth": 1980,
+      "interest_hashtags": [
+        5,
+        4
+      ],
+      "gender": "male",
+      "user_avatar": "",
+      "user_description": "I am the god and who are you? I can destroy you with my only blink. Do you see how cool I am?"
+    }
+  },
+  {
+    "model": "user_profile.userInfo",
+    "pk": 3,
+    "fields": {
+      "login": 3,
+      "city_of_residence_latitude": 52.08,
+      "city_of_residence_longitude": 4.31,
+      "year_of_birth": 1994,
+      "interest_hashtags": [
+        1,
+        2,
+        3
+      ],
+      "gender": "female",
+      "user_avatar": "",
+      "user_description": "Don't look at me, I am dangerous"
+    }
+  },
+  {
+    "model": "user_profile.userInfo",
+    "pk": 4,
+    "fields": {
+      "login": 4,
+      "city_of_residence_latitude": 52.08,
+      "city_of_residence_longitude": 4.31,
+      "year_of_birth": 1985,
+      "interest_hashtags": [
+        1
+      ],
+      "gender": "not_specified",
+      "user_avatar": "",
+      "user_description": "You will die if I stop"
+    }
+  },
+  {
+    "model": "user_profile.userInfo",
+    "pk": 5,
+    "fields": {
+      "login": 5,
+      "city_of_residence_latitude": 52.011111,
+      "city_of_residence_longitude": 4.711111,
+      "year_of_birth": 1940,
+      "interest_hashtags": [
+        3,
+        1,
+        2,
+        5
+      ],
+      "gender": "not_specified",
+      "user_avatar": "",
+      "user_description": "I live on your pans and in your water, drink me!"
+    }
+  }
+]
