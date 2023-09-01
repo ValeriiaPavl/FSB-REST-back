@@ -32,11 +32,16 @@ class UserDetail(APIView):
         serializer = UserInfoSerializer(user)
         return Response(serializer.data)
 
-class LikesView(APIView):
 
-    def get(self, request, pk):
+class LikesView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
         all_likes = Likes.objects.all()
         person_likes = all_likes.filter(from_person=pk)
+        user_id = request.user.id
+        person_likes = all_likes.filter(from_person=user_id)
         serialized_likes = LikesSerializer(person_likes, many=True)
         return Response(serialized_likes.data)
 
