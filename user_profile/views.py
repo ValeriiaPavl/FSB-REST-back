@@ -1,9 +1,10 @@
 from django.http import Http404
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from user_profile.models import UserInfo
-from user_profile.serializer import UserInfoSerializer
+from user_profile.models import UserInfo, Likes
+from user_profile.serializer import UserInfoSerializer, LikesSerializer
 
 
 class UserInfoList(APIView):
@@ -24,3 +25,11 @@ class UserDetail(APIView):
         user = self.get_object(pk)
         serializer = UserInfoSerializer(user)
         return Response(serializer.data)
+
+class LikesView(APIView):
+
+    def get(self, request, pk):
+        all_likes = Likes.objects.all()
+        person_likes = all_likes.filter(from_person=pk)
+        serialized_likes = LikesSerializer(person_likes, many=True)
+        return Response(serialized_likes.data)

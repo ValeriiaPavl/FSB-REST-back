@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from user_profile.models import UserInfo
+from user_profile.models import UserInfo, Likes
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -18,3 +18,9 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     def get_interest_hashtags(self, obj):
         return [hashtag.name for hashtag in obj.interest_hashtags.all()]
+
+
+class LikesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Likes
+        fields = '__all__'
