@@ -1,8 +1,14 @@
-from django.http import Http404
+import json
+
+from django.contrib.auth import authenticate
+from django.http import Http404, JsonResponse
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from FSB_REST.auth.authentication_utility import generate_jwt_token
+from FSB_REST.auth.middleware import JWTAuthentication
 from user_profile.models import UserInfo, Likes
 from user_profile.serializer import UserInfoSerializer, LikesSerializer
 
@@ -33,3 +39,25 @@ class LikesView(APIView):
         person_likes = all_likes.filter(from_person=pk)
         serialized_likes = LikesSerializer(person_likes, many=True)
         return Response(serialized_likes.data)
+
+    def post(self, request, from_person):
+        serializer = LikesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    def post(self, request):
+
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            token = generate_jwt_token(user.id)
+            return JsonResponse({'token': token})
+        else:
+            return JsonResponse({'error': 'Authentication failed'}, status=401)
