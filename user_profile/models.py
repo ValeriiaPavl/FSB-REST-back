@@ -17,7 +17,7 @@ class Likes(models.Model):
     # one reporter can have many articles
     from_person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='from_person')
     to_person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='to_person')
-    like_added = models.DateTimeField()
+    like_added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('from_person', 'to_person')
