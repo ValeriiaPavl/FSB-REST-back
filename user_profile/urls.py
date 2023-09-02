@@ -1,7 +1,6 @@
 from django.urls import path
 
 from user_profile import views
-from .views import LoginView
 
 urlpatterns = [
     path('users/', views.UserInfoList.as_view()),
@@ -10,4 +9,6 @@ urlpatterns = [
     path('likes/to', views.LikesToUserView.as_view()),
     path('likes/mutual', views.MutualLikesView.as_view()),
     path('login', LoginView.as_view())
+    path('login', views.LoginView.as_view()),
+    path('register', views.RegisterView.as_view())
 ]

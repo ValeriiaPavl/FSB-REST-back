@@ -20,6 +20,12 @@ class UserInfoSerializer(serializers.ModelSerializer):
         return [hashtag.name for hashtag in obj.interest_hashtags.all()]
 
 
+class RegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
 class LikesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Likes
