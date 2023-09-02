@@ -59,9 +59,26 @@ class LikesToUserView(APIView):
 
     def get(self, request):
         user_id = request.user.id
-        who_liked_the_person = Likes.objects.all().filter(to_person=user_id)
+        who_liked_the_person = Likes.objects.filter(to_person=user_id)
         serialized_likes_to = LikesSerializer(who_liked_the_person, many=True)
         return Response(serialized_likes_to.data)
+
+
+class MutualLikesView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        all_likes = Likes.objects.all()
+        user_id = request.user.id
+        person_likes = all_likes.filter(from_person=user_id).values_list('to_person', flat=True)
+        who_liked_the_person = all_likes.filter(to_person=user_id).values_list('from_person', flat=True)
+        mutual_likes = person_likes.intersection(who_liked_the_person)
+        user_infos = UserInfo.objects.filter(login_id__in=mutual_likes).prefetch_related("interest_hashtags")
+        serializer = UserInfoSerializer(user_infos, many=True)
+        print(serializer.data)
+        return Response(serializer.data)
+
 
 
 class LoginView(APIView):

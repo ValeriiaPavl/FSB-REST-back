@@ -8,5 +8,6 @@ urlpatterns = [
     path('users/<int:pk>', views.UserDetail.as_view()),
     path('likes/from', views.LikesFromUserView.as_view()),
     path('likes/to', views.LikesToUserView.as_view()),
+    path('likes/mutual', views.MutualLikesView.as_view()),
     path('login', LoginView.as_view())
 ]
