@@ -33,7 +33,7 @@ class UserDetail(APIView):
         return Response(serializer.data)
 
 
-class LikesView(APIView):
+class LikesFromUserView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -42,8 +42,8 @@ class LikesView(APIView):
         person_likes = all_likes.filter(from_person=pk)
         user_id = request.user.id
         person_likes = all_likes.filter(from_person=user_id)
-        serialized_likes = LikesSerializer(person_likes, many=True)
-        return Response(serialized_likes.data)
+        serialized_likes_from = LikesSerializer(person_likes, many=True)
+        return Response(serialized_likes_from.data)
 
     def post(self, request, from_person):
         serializer = LikesSerializer(data=request.data)
@@ -51,6 +51,17 @@ class LikesView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LikesToUserView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+        who_liked_the_person = Likes.objects.all().filter(to_person=user_id)
+        serialized_likes_to = LikesSerializer(who_liked_the_person, many=True)
+        return Response(serialized_likes_to.data)
 
 
 class LoginView(APIView):
