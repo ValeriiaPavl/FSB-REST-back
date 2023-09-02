@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from FSB_REST.auth.authentication_utility import generate_jwt_token
 from FSB_REST.auth.middleware import JWTAuthentication
 from user_profile.models import UserInfo, Likes
-from user_profile.serializer import UserInfoSerializer, LikesSerializer
+from user_profile.serializer import UserInfoSerializer, LikesSerializer, RegistrationSerializer, UserInfoPOSTSerializer
 
 
 class UserInfoList(APIView):
@@ -19,11 +19,18 @@ class UserInfoList(APIView):
         serializer = UserInfoSerializer(user_infos, many=True)
         return Response(serializer.data)
 
+    def post(self, request):
+        serializer = UserInfoPOSTSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserDetail(APIView):
     def get_object(self, pk):
         try:
-            return UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').get(pk=pk)
+            return UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').get(login_id=pk)
         except UserInfo.DoesNotExist:
             raise Http404
 
@@ -39,7 +46,6 @@ class LikesFromUserView(APIView):
 
     def get(self, request):
         all_likes = Likes.objects.all()
-        person_likes = all_likes.filter(from_person=pk)
         user_id = request.user.id
         person_likes = all_likes.filter(from_person=user_id)
         serialized_likes_from = LikesSerializer(person_likes, many=True)
@@ -78,7 +84,6 @@ class MutualLikesView(APIView):
         serializer = UserInfoSerializer(user_infos, many=True)
         print(serializer.data)
         return Response(serializer.data)
-
 
 
 class LoginView(APIView):

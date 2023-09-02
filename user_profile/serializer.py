@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from user_profile.models import UserInfo, Likes
@@ -18,6 +19,12 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     def get_interest_hashtags(self, obj):
         return [hashtag.name for hashtag in obj.interest_hashtags.all()]
+
+
+class UserInfoPOSTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserInfo
+        fields = '__all__'
 
 
 class RegistrationSerializer(serializers.ModelSerializer):

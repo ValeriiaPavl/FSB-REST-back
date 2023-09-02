@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -39,6 +37,6 @@ class UserInfo(models.Model):
     city_of_residence_latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, default='')
     city_of_residence_longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, default='')
     year_of_birth = models.PositiveSmallIntegerField(validators=[MaxValueValidator(2022), MinValueValidator(1920)])
-    user_avatar = models.ImageField(upload_to=user_directory_path, default=Path(f'without_avatar.webp'))
+    user_avatar = models.ImageField(upload_to=user_directory_path, blank=True)
     user_description = models.TextField()
     interest_hashtags = models.ManyToManyField(InterestHashtag, blank=True)
