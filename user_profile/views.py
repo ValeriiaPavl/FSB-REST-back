@@ -1,5 +1,7 @@
 import json
 
+import jwt
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.http import Http404, JsonResponse
 from rest_framework import status
@@ -46,17 +48,46 @@ class LikesFromUserView(APIView):
 
     def get(self, request):
         all_likes = Likes.objects.all()
-        user_id = request.user.id
-        person_likes = all_likes.filter(from_person=user_id)
-        serialized_likes_from = user_profile.serializer.LikesSerializer(person_likes, many=True)
-        return Response(serialized_likes_from.data)
+        auth_header = request.META.get('HTTP_AUTHORIZATION')
+        if auth_header:
+            jwt_token = auth_header.split(' ')[1]
+            try:
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                user_id = decoded_token.get('user_id')
+                person_likes = all_likes.filter(from_person=user_id)
+                serialized_likes_from = user_profile.serializer.LikesSerializer(person_likes, many=True)
+                return Response(serialized_likes_from.data)
+            except jwt.ExpiredSignatureError:
+                return Response({'message': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+            except jwt.DecodeError:
+                return Response({'message': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    def post(self, request, from_person):
-        serializer = user_profile.serializer.LikesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'message': 'Token not provided'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    def post(self, request):
+        auth_header = request.META.get('HTTP_AUTHORIZATION')
+        print(request.data)
+        if auth_header:
+            jwt_token = auth_header.split(' ')[1]
+            try:
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                user_id = decoded_token.get('user_id')
+
+                serializer = user_profile.serializer.LikesSerializer(
+                    data={"from_person": user_id, "to_person": request.data['to_person']})
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except jwt.ExpiredSignatureError:
+                return Response({'message': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+            except jwt.DecodeError:
+                return Response({'message': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        else:
+            return Response({'message': 'Token not provided'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 class LikesToUserView(APIView):
