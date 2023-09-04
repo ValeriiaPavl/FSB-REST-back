@@ -12,7 +12,7 @@
         2
       ],
       "gender": "female",
-      "user_avatar": "without_avatar.webp",
+      "user_avatar": "https://http.cat/images/101.jpg",
       "user_description": "I am a woman and the weather is bad today, so I am planning to code all day"
     }
   },
@@ -29,7 +29,7 @@
         4
       ],
       "gender": "male",
-      "user_avatar": "without_avatar.webp",
+      "user_avatar": "https://s9.travelask.ru/system/images/files/001/466/004/wysiwyg_jpg/01-04-2021_15-13-45.jpg?1617279828",
       "user_description": "I am the god and who are you? I can destroy you with my only blink. Do you see how cool I am?"
     }
   },
@@ -47,7 +47,7 @@
         3
       ],
       "gender": "female",
-      "user_avatar": "without_avatar.webp",
+      "user_avatar": "https://http.cat/images/101.jpg",
       "user_description": "Don't look at me, I am dangerous"
     }
   },
@@ -63,7 +63,7 @@
         1
       ],
       "gender": "not_specified",
-      "user_avatar": "without_avatar.webp",
+      "user_avatar": "https://http.cat/images/101.jpg",
       "user_description": "You will die if I stop"
     }
   },
@@ -82,7 +82,7 @@
         5
       ],
       "gender": "not_specified",
-      "user_avatar": "without_avatar.webp",
+      "user_avatar": "https://http.cat/images/101.jpg",
       "user_description": "I live on your pans and in your water, drink me!"
     }
   }
