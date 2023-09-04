@@ -86,6 +86,39 @@ class MutualLikesView(APIView):
         return Response(serializer.data)
 
 
+class HashtagView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user_id = request.user.id
+        user_from_db = UserInfo.objects.get(login_id=user_id)
+        user_interests = user_from_db.interest_hashtags.values_list('name', flat=True)
+        serializer = user_profile.serializer.HashtagSerializer(data=request.data)
+        print(request.data)
+        if serializer.is_valid():
+            curr_hashtag = serializer.validated_data['name']
+            if curr_hashtag not in user_interests:
+                all_hashtags = InterestHashtag.objects.all()
+                hashtags_names = all_hashtags.values_list('name', flat=True)
+                if curr_hashtag in hashtags_names:
+                    print("Yes, it is")
+                    existing_tag = all_hashtags.get(name=curr_hashtag)
+                    user_from_db.interest_hashtags.add(existing_tag)
+                else:
+                    new_tag = serializer.save()
+                user_from_db.interest_hashtags.add(new_tag)
+                return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+            else:
+                data = {
+                    'error': 'This hashtag already exists in user interest hashtags'
+                }
+                return JsonResponse(data, status=400)
+        else:
+            return JsonResponse(data=serializer.errors, status=400)
+
+
 class LoginView(APIView):
     def post(self, request):
 

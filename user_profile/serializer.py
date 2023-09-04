@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from user_profile.models import UserInfo, Likes
+from user_profile.models import UserInfo, Likes, InterestHashtag
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -37,3 +37,11 @@ class LikesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Likes
         fields = '__all__'
+
+
+class HashtagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InterestHashtag
+        fields = ['name']
+
+    name = serializers.CharField(max_length=50, validators=[])
