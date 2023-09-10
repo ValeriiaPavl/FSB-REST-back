@@ -143,6 +143,11 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
+CORS_ALLOW_METHODS = ['POST', 'GET', 'OPTIONS', 'DELETE', 'PUT']
+CORS_ALLOW_HEADERS = ['*']
+
+# CORS_ALLOW_ORIGINS = ['http://localhost:3000']
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 # STATIC_ROOT = BASE_DIR / 'static'

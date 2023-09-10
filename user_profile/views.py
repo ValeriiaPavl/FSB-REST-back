@@ -22,11 +22,23 @@ class UserInfoList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = user_profile.serializer.UserInfoPOSTSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user_serializer = user_profile.serializer.UserSerializer(data=request.data.get("user"))
+
+        if user_serializer.is_valid():
+            user = user_serializer.save()
+
+            profile_data = request.data.get('profile')
+            profile_serializer = user_profile.serializer.UserInfoPOSTSerializer(data=profile_data)
+            if profile_serializer.is_valid():
+                profile = profile_serializer.save(login=user)
+                return Response({'user': user_serializer.data, 'profile': profile_serializer.data},
+                                status=status.HTTP_201_CREATED)
+            else:
+                user.delete()
+                return Response({'errors': {'profile': profile_serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'errors': {'user': user_serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class UserDetail(APIView):

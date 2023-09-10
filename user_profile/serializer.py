@@ -24,10 +24,14 @@ class UserInfoSerializer(serializers.ModelSerializer):
 class UserInfoPOSTSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
-        fields = '__all__'
+        fields = ['gender',
+                  'city_of_residence_latitude',
+                  'city_of_residence_longitude',
+                  'year_of_birth', 'user_avatar',
+                  'user_description']
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
