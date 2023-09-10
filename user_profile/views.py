@@ -40,7 +40,6 @@ class UserInfoList(APIView):
             return Response({'errors': {'user': user_serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class UserDetail(APIView):
     def get_object(self, pk):
         try:
@@ -52,6 +51,31 @@ class UserDetail(APIView):
         user = self.get_object(pk)
         serializer = user_profile.serializer.UserInfoSerializer(user)
         return Response(serializer.data)
+
+
+class UserFromTokenView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        auth_header = request.META.get('HTTP_AUTHORIZATION')
+        if auth_header:
+            jwt_token = auth_header.split(' ')[1]
+            try:
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                user_id = decoded_token.get('user_id')
+                try:
+                    user = UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').get(
+                        login_id=user_id)
+                    serializer = user_profile.serializer.UserInfoSerializer(user)
+                    return Response(serializer.data)
+                except UserInfo.DoesNotExist:
+                    raise Http404
+
+            except jwt.ExpiredSignatureError:
+                return Response({'message': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+            except jwt.DecodeError:
+                return Response({'message': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LikesFromUserView(APIView):
@@ -99,7 +123,6 @@ class LikesFromUserView(APIView):
 
         else:
             return Response({'message': 'Token not provided'}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 
 class LikesToUserView(APIView):
@@ -175,4 +198,3 @@ class LoginView(APIView):
             return JsonResponse({'token': token})
         else:
             return JsonResponse({'error': 'Authentication failed'}, status=401)
-

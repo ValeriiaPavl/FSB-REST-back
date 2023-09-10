@@ -10,4 +10,5 @@ urlpatterns = [
     path('likes/mutual', views.MutualLikesView.as_view()),
     path('login', views.LoginView.as_view()),
     path('hashtags/add', views.HashtagView.as_view()),
+    path('your_profile', views.UserFromTokenView.as_view())
 ]
