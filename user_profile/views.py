@@ -67,7 +67,7 @@ class UserExtendedInfoList(APIView):
                 raise HttpResponseNotAllowed
 
 
-class UserDetail(APIView):
+class UserExtendedDetail(APIView):
     def get_object(self, pk):
         try:
             return UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').get(login_id=pk)
@@ -75,10 +75,33 @@ class UserDetail(APIView):
             raise Http404
 
     def get(self, request, pk, format=None):
-        user = self.get_object(pk)
-        serializer = user_profile.serializer.UserInfoSerializer(user)
-        return Response(serializer.data)
+        auth_header = request.META.get('HTTP_AUTHORIZATION')
+        if auth_header:
+            jwt_token = auth_header.split(' ')[1]
+            try:
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                user_id = decoded_token.get('user_id')
+                all_likes_from = list(map(lambda l: l.to_person.id, Likes.objects.filter(from_person=user_id)))
+                me = UserInfo.objects.get(id=user_id)
+                user = UserInfo.objects.select_related('login').prefetch_related("interest_hashtags").get(login_id=pk)
+                serializer = user_profile.serializer.ExtendedUserInfoSerializer(user, context={
+                    'likes_from_me': all_likes_from, 'me': me})
+                return Response(serializer.data)
+            except UserInfo.DoesNotExist:
+                raise Http404
 
+
+# class UserDetail(APIView):
+#     def get_object(self, pk):
+#         try:
+#             return UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').get(login_id=pk)
+#         except UserInfo.DoesNotExist:
+#             raise Http404
+#
+#     def get(self, request, pk, format=None):
+#         user = self.get_object(pk)
+#         serializer = user_profile.serializer.UserInfoSerializer(user)
+#         return Response(serializer.data)
 
 class UserFromTokenView(APIView):
     authentication_classes = [JWTAuthentication]
