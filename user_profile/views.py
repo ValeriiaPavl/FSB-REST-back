@@ -3,7 +3,7 @@ import json
 import jwt
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponseNotAllowed
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -38,6 +38,33 @@ class UserInfoList(APIView):
                 return Response({'errors': {'profile': profile_serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'errors': {'user': user_serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserExtendedInfoList(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        auth_header = request.META.get('HTTP_AUTHORIZATION')
+        if auth_header:
+            jwt_token = auth_header.split(' ')[1]
+            try:
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                user_id = decoded_token.get('user_id')
+                try:
+                    all_users = UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').exclude(
+                        id=user_id)
+
+                    all_likes_from = list(map(lambda l: l.to_person.id, Likes.objects.filter(from_person=user_id)))
+                    me = UserInfo.objects.get(id=user_id)
+
+                    serializer = user_profile.serializer.ExtendedUserInfoSerializer(all_users, many=True, context={
+                        'likes_from_me': all_likes_from, 'me': me})
+                    return Response(serializer.data)
+                except UserInfo.DoesNotExist:
+                    raise Http404
+            except:
+                raise HttpResponseNotAllowed
 
 
 class UserDetail(APIView):
