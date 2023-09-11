@@ -140,7 +140,9 @@ class LikesFromUserView(APIView):
             try:
                 decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
                 user_id = decoded_token.get('user_id')
-                person_likes = all_likes.filter(from_person=user_id)
+                person_likes = all_likes.filter(from_person=user_id).select_related("to_person__userinfo")
+                print(person_likes)
+
                 serialized_likes_from = user_profile.serializer.LikesSerializer(person_likes, many=True)
                 return Response(serialized_likes_from.data)
             except jwt.ExpiredSignatureError:
