@@ -203,7 +203,6 @@ class MutualLikesView(APIView):
         print(mutual_likes)
         user_infos = Likes.objects.filter(Q(from_person__in=mutual_likes) & Q(to_person=user_id)).select_related(
             "from_person__userinfo")
-        print(user_infos.query)
         serializer = user_profile.serializer.MutualLikesSerializer(user_infos, many=True)
         return Response(serializer.data)
 

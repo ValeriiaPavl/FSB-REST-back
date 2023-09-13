@@ -102,7 +102,7 @@ class LikesToMeSerializer(serializers.ModelSerializer):
         fields = ["like_added", "from_person_id", "to_person_id", "username", "user_avatar", "gender"]
 
 
-class MutualLikesSerializer(LikesFromMeSerializer):
+class MutualLikesSerializer(LikesToMeSerializer):
     email = serializers.ReadOnlyField(source='to_person.email')
 
     class Meta:
