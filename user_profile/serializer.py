@@ -82,16 +82,32 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class LikesSerializer(serializers.ModelSerializer):
+class LikesFromMeSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='to_person.username')
     gender = serializers.ReadOnlyField(source='to_person.userinfo.gender')
     user_avatar = serializers.ReadOnlyField(source='to_person.userinfo.user_avatar')
+
     class Meta:
         model = Likes
-        fields = ["like_added", "to_person_id", "username", "user_avatar", "gender"]
+        fields = ["like_added", "to_person_id", "from_person_id", "username", "user_avatar", "gender"]
 
 
+class LikesToMeSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='from_person.username')
+    gender = serializers.ReadOnlyField(source='from_person.userinfo.gender')
+    user_avatar = serializers.ReadOnlyField(source='from_person.userinfo.user_avatar')
 
+    class Meta:
+        model = Likes
+        fields = ["like_added", "from_person_id", "to_person_id", "username", "user_avatar", "gender"]
+
+
+class MutualLikesSerializer(LikesFromMeSerializer):
+    email = serializers.ReadOnlyField(source='to_person.email')
+
+    class Meta:
+        model = Likes
+        fields = ["like_added", "from_person_id", "to_person_id", "username", "user_avatar", "gender", "email"]
 
 
 class HashtagSerializer(serializers.ModelSerializer):
