@@ -163,7 +163,7 @@ class LikesFromMeView(APIView):
                 decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
                 user_id = decoded_token.get('user_id')
 
-                serializer = user_profile.serializer.LikesFromMeSerializer(
+                serializer = user_profile.serializer.LikesFromMePOSTSerializer(
                     data={"from_person": user_id, "to_person": request.data['to_person']})
                 if serializer.is_valid():
                     serializer.save()
@@ -213,7 +213,7 @@ class HashtagView(APIView):
 
     def post(self, request):
         user_id = request.user.id
-        user_from_db = UserInfo.objects.get(login_id=user_id)
+        user_from_db = UserInfo.objects.get(login__id=user_id)
         user_interests = user_from_db.interest_hashtags.values_list('name', flat=True)
         serializer = user_profile.serializer.HashtagSerializer(data=request.data)
         print(request.data)
@@ -253,3 +253,27 @@ class LoginView(APIView):
             return JsonResponse({'token': token})
         else:
             return JsonResponse({'error': 'Authentication failed'}, status=401)
+
+
+class GetUserIdView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        auth_header = request.META.get('HTTP_AUTHORIZATION')
+        if auth_header:
+            jwt_token = auth_header.split(' ')[1]
+            try:
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                user_id = decoded_token.get('user_id')
+                try:
+                    user = UserInfo.objects.select_related('login').get(
+                        login_id=user_id).login_id
+                    return Response(data={"user_id": user}, status=status.HTTP_200_OK)
+                except UserInfo.DoesNotExist:
+                    raise Http404
+
+            except jwt.ExpiredSignatureError:
+                return Response({'message': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+            except jwt.DecodeError:
+                return Response({'message': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
