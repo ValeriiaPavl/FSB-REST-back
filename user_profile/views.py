@@ -83,7 +83,7 @@ class UserExtendedDetail(APIView):
                 decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
                 user_id = decoded_token.get('user_id')
                 all_likes_from = list(map(lambda l: l.to_person.id, Likes.objects.filter(from_person=user_id)))
-                me = UserInfo.objects.get(id=user_id)
+                me = UserInfo.objects.get(login__id=user_id)
                 user = UserInfo.objects.select_related('login').prefetch_related("interest_hashtags").get(login_id=pk)
                 serializer = user_profile.serializer.ExtendedUserInfoSerializer(user, context={
                     'likes_from_me': all_likes_from, 'me': me})
@@ -117,7 +117,7 @@ class UserFromTokenView(APIView):
                 user_id = decoded_token.get('user_id')
                 try:
                     user = UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').get(
-                        login_id=user_id)
+                        login__id=user_id)
                     serializer = user_profile.serializer.UserInfoSerializer(user)
                     return Response(serializer.data)
                 except UserInfo.DoesNotExist:
