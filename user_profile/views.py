@@ -57,7 +57,7 @@ class UserExtendedInfoList(APIView):
                         id=user_id)
 
                     all_likes_from = list(map(lambda l: l.to_person.id, Likes.objects.filter(from_person=user_id)))
-                    me = UserInfo.objects.get(id=user_id)
+                    me = UserInfo.objects.get(login__id=user_id)
 
                     serializer = user_profile.serializer.ExtendedUserInfoSerializer(all_users, many=True, context={
                         'likes_from_me': all_likes_from, 'me': me})

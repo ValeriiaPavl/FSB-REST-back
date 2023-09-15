@@ -92,6 +92,11 @@ class LikesFromMeSerializer(serializers.ModelSerializer):
         fields = ["like_added", "to_person_id", "from_person_id", "username", "user_avatar", "gender"]
 
 
+class LikesFromMePOSTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Likes
+        fields = '__all__'
+
 class LikesToMeSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='from_person.username')
     gender = serializers.ReadOnlyField(source='from_person.userinfo.gender')
