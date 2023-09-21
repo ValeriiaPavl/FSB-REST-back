@@ -23,6 +23,19 @@ class UserInfoSerializer(serializers.ModelSerializer):
         return [hashtag.name for hashtag in obj.interest_hashtags.all()]
 
 
+class MyProfileSerializer(UserInfoSerializer):
+    email = serializers.ReadOnlyField(source='login.email')
+
+    class Meta:
+        model = UserInfo
+        fields = ['username', 'gender',
+                  'city_of_residence_latitude',
+                  'city_of_residence_longitude',
+                  'year_of_birth', 'user_avatar',
+                  'user_description', 'interest_hashtags', 'user_id', 'email']
+
+
+
 def get_distance(point1, point2):
     R = 6370
     lat1 = radians(point1[0])  # insert value
@@ -66,6 +79,7 @@ class ExtendedUserInfoSerializer(serializers.ModelSerializer):
 
         return get_distance(meLocation, userLocation)
 
+
 class UserInfoPOSTSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
@@ -96,6 +110,7 @@ class LikesFromMePOSTSerializer(serializers.ModelSerializer):
     class Meta:
         model = Likes
         fields = '__all__'
+
 
 class LikesToMeSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='from_person.username')

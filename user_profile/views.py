@@ -3,6 +3,7 @@ import json
 import jwt
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, JsonResponse, HttpResponseNotAllowed
 from rest_framework import status
@@ -54,7 +55,7 @@ class UserExtendedInfoList(APIView):
                 user_id = decoded_token.get('user_id')
                 try:
                     all_users = UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').exclude(
-                        id=user_id)
+                        login__id=user_id)
 
                     all_likes_from = list(map(lambda l: l.to_person.id, Likes.objects.filter(from_person=user_id)))
                     me = UserInfo.objects.get(login__id=user_id)
@@ -118,7 +119,7 @@ class UserFromTokenView(APIView):
                 try:
                     user = UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').get(
                         login__id=user_id)
-                    serializer = user_profile.serializer.UserInfoSerializer(user)
+                    serializer = user_profile.serializer.MyProfileSerializer(user)
                     return Response(serializer.data)
                 except UserInfo.DoesNotExist:
                     raise Http404
@@ -127,6 +128,39 @@ class UserFromTokenView(APIView):
                 return Response({'message': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
             except jwt.DecodeError:
                 return Response({'message': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    def patch(self, request):
+        print(request.data)
+        auth_header = request.META.get('HTTP_AUTHORIZATION')
+        if auth_header:
+            jwt_token = auth_header.split(' ')[1]
+            try:
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                user_id = decoded_token.get('user_id')
+                user = User.objects.get(id=user_id)
+                user_serializer = user_profile.serializer.UserSerializer(instance=user, data=request.data.get("user"),
+                                                                         partial=True)
+            except jwt.ExpiredSignatureError:
+                return Response({'message': 'Token has expired'}, status=status.HTTP_401_UNAUTHORIZED)
+            except jwt.DecodeError:
+                return Response({'message': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if user_serializer.is_valid():
+            print(user_serializer)
+            user = user_serializer.save()
+            new_profile_data = request.data.get('profile')
+            profile_from_db = UserInfo.objects.select_related('login').get(login_id=user_id)
+            profile_serializer = user_profile.serializer.UserInfoPOSTSerializer(instance=profile_from_db,
+                                                                                data=new_profile_data, partial=True)
+            if profile_serializer.is_valid():
+                print(profile_serializer)
+                new_profile = profile_serializer.save()
+                return Response({'user': user_serializer.data, 'profile': profile_serializer.data},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({'errors': {'profile': profile_serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'errors': {'user': user_serializer.errors}}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LikesFromMeView(APIView):
