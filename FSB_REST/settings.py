@@ -143,8 +143,8 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-CORS_ALLOW_METHODS = ['POST', 'GET', 'OPTIONS', 'DELETE', 'PUT']
-CORS_ALLOW_HEADERS = ['*']
+CORS_ALLOW_METHODS = ['POST', 'GET', 'OPTIONS', 'DELETE', 'PUT', 'PATCH']
+CORS_ALLOW_ALL_ORIGINS = True
 
 # CORS_ALLOW_ORIGINS = ['http://localhost:3000']
 
