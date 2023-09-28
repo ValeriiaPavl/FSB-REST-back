@@ -114,7 +114,8 @@ env/
 venv/
 ENV/
 env.bak/
-venv.bak/
+venv.bak
+myenv
 
 
 
@@ -132,5 +133,9 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# PyCharm
+.idea/
+
 
 
