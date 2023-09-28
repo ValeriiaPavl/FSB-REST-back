@@ -51,7 +51,7 @@ class UserExtendedInfoList(APIView):
         if auth_header:
             jwt_token = auth_header.split(' ')[1]
             try:
-                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms='HS256')
                 user_id = decoded_token.get('user_id')
                 try:
                     all_users = UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').exclude(
@@ -81,7 +81,7 @@ class UserExtendedDetail(APIView):
         if auth_header:
             jwt_token = auth_header.split(' ')[1]
             try:
-                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms='HS256')
                 user_id = decoded_token.get('user_id')
                 all_likes_from = list(map(lambda l: l.to_person.id, Likes.objects.filter(from_person=user_id)))
                 me = UserInfo.objects.get(login__id=user_id)
@@ -114,7 +114,7 @@ class UserFromTokenView(APIView):
         if auth_header:
             jwt_token = auth_header.split(' ')[1]
             try:
-                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms='HS256')
                 user_id = decoded_token.get('user_id')
                 try:
                     user = UserInfo.objects.select_related('login').prefetch_related('interest_hashtags').get(
@@ -135,7 +135,7 @@ class UserFromTokenView(APIView):
         if auth_header:
             jwt_token = auth_header.split(' ')[1]
             try:
-                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms='HS256')
                 user_id = decoded_token.get('user_id')
                 user = User.objects.get(id=user_id)
                 user_serializer = user_profile.serializer.UserSerializer(instance=user, data=request.data.get("user"),
@@ -173,7 +173,7 @@ class LikesFromMeView(APIView):
         if auth_header:
             jwt_token = auth_header.split(' ')[1]
             try:
-                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms='HS256')
                 user_id = decoded_token.get('user_id')
                 person_likes = all_likes.filter(from_person=user_id).select_related("to_person__userinfo")
                 print(person_likes)
@@ -194,7 +194,7 @@ class LikesFromMeView(APIView):
         if auth_header:
             jwt_token = auth_header.split(' ')[1]
             try:
-                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms='HS256')
                 user_id = decoded_token.get('user_id')
 
                 serializer = user_profile.serializer.LikesFromMePOSTSerializer(
@@ -298,7 +298,7 @@ class GetUserIdView(APIView):
         if auth_header:
             jwt_token = auth_header.split(' ')[1]
             try:
-                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithm='HS256')
+                decoded_token = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms='HS256')
                 user_id = decoded_token.get('user_id')
                 try:
                     user = UserInfo.objects.select_related('login').get(

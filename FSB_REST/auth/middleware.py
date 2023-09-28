@@ -24,6 +24,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
             user = user_model.objects.get(pk=user_id)
             return user, None
         except (ValueError, jwt.ExpiredSignatureError, jwt.DecodeError, user_model.DoesNotExist):
+
             raise AuthenticationFailed('Authentication failed')
 
     def authenticate_header(self, request):
