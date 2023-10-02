@@ -1,5 +1,6 @@
 from math import radians, sin, atan2, sqrt, cos
 
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -91,9 +92,15 @@ class UserInfoPOSTSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['username', 'password', 'email']
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        user = super().create(validated_data)
+        return user
 
 
 class LikesFromMeSerializer(serializers.ModelSerializer):
