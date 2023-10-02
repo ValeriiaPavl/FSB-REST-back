@@ -9,4 +9,5 @@ def generate_jwt_token(user_id):
         # 'iat': datetime.utcnow(),
     }
     token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-    return token.decode('utf-8')
+    # return token.decode('utf-8')
+    return token
